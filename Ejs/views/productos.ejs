@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+<body>
+    <h1 style="text-align: center;">Vista de productos</h1>
+<div class="jumbotron container">
+    <% if (productos.length > 0) { %> 
+    <div class="table-responsive">
+        <table class="table table-dark">
+            <tr class="text-info">
+                <th class="font-weight-bold">Nombre</th>
+                <th class="font-weight-bold">Precio</th>
+                <th class="font-weight-bold">Foto</th>
+            </tr>
+            <% productos.forEach(productos => { %>
+            <tr>
+                    <td><%= productos.title %></td>
+                    <td><%= productos.price %></td>
+                    <td><img src="<%= productos.thumbnail %>" alt="imagen producto" style="height: 40px;"></td>
+            </tr>
+            <% }) %>
+        </table>
+        <button class="btn btn-primary mx-auto"><a href="/" style="text-decoration:none; color: white">Volver</a></button>
+    </div>
+    <% } else { %>
+        <h2>No se encontraron productos</h2>
+        <button class="btn btn-primary mx-auto"><a href="/" style="text-decoration:none; color: white">Volver</a></button>
+    <% } %>
+</div>
+</body>
+</html>
+
+

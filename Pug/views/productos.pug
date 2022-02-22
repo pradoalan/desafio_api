@@ -1,0 +1,23 @@
+extends ./main
+block productos
+    h1(style="text-align: center;") Vista de productos
+    div(class="jumbotron container")
+        if productos.length > 0 
+            div(class="table-responsive")
+                table(class="table table-dark")
+                    tr(class="text-info")
+                        th(class="font-weight-bold") Nombre
+                        th(class="font-weight-bold") Precio
+                        th(class="font-weight-bold") Foto
+                    each item in productos
+                        <tr>
+                            td=`${item.title}`
+                            td=`${item.price}`
+                            td
+                                img(src=`${item.thumbnail}` alt="imagen producto" style="height: 40px;")
+                button(class="btn btn-primary mx-auto")
+                    a(href="/" style="text-decoration:none; color: white") Volver
+        else
+            h2 No se encontraron productos
+            button(class="btn btn-primary mx-auto")
+                a(href="/" style="text-decoration:none; color: white") Volver

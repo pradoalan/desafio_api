@@ -1,0 +1,1 @@
+El motor de plantilla que me parecio mejor fue EJS dado que es muy practico y simple colocar sus propiedades
