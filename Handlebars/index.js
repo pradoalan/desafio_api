@@ -1,43 +1,46 @@
 const express = require('express')
-const {engine} = require('express-handlebars')
-const path = require('path');
+
+const { Server: HttpServer } = require('http')
+const { Server: Socket } = require('socket.io')
+
+const ContenedorProductos = require('./models/contenedorProductos')
+const ContenedorMensajes = require('./models/contenedorMensajes')
 
 const app = express()
-const PORT = process.env.PORT || 8080
+const httpServer = new HttpServer(app)
+const io = new Socket(httpServer)
 
-const {Productos} = require('./models/index');
-const productos = new Productos();
+const productosApi = new ContenedorProductos()
+const mensajesApi = new ContenedorMensajes('mensajes.json')
+
+//Socket
+io.on('connection', async socket => {
+    console.log('Nuevo cliente conectado!');
+
+    socket.emit('productos', productosApi.listarAll());
+
+    socket.on('update', producto => {
+        productosApi.guardar(producto)
+        io.sockets.emit('productos', productosApi.listarAll());
+    })
+
+    socket.emit('mensajes', await mensajesApi.listarAll());
+
+    socket.on('nuevoMensaje', async mensaje => {
+        mensaje.fyh = new Date().toLocaleString()
+        await mensajesApi.guardar(mensaje)
+        io.sockets.emit('mensajes', await mensajesApi.listarAll());
+    })
+});
 
 //Middlewares
-app.use(express.json());
-app.use(express.urlencoded({extended: true}))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(express.static('public'))
 
-//Template engine
-app.engine('hbs', engine({
-    extname: 'hbs',
-    defaultLayout: 'main.hbs',
-    layoutsDir: path.resolve(__dirname, './views/layouts')
-}))
-app.set('views', './views')
-app.set('view engine', 'hbs');
-
-//Template render
-app.get('/', (req, res) => {
-    res.render('index')
+//Server listen
+const PORT = 8080
+const connectedServer = httpServer.listen(PORT, () => {
+    console.log(`Servidor http escuchando en el puerto ${connectedServer.address().port}`)
 })
-app.get('/productos', (req, res) => {
-    res.render('productos', {productos: productos.traerTodo()})
-})
-app.post('/productos', (req, res) => {
-    productos.agregarProducto(req.body)
-    res.redirect('/');
-})
-
-//Server
-const servidorConectado = app.listen(PORT, () => {
-    console.log(`El servidor esta andando en el puerto ${PORT}`);
-})
-
-servidorConectado.on('error', (error) => {
-    console.error('Error: ', error);
-})
+connectedServer.on('error', error => console.log(`Error en servidor ${error}`))
